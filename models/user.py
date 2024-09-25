@@ -1,29 +1,14 @@
 #!/usr/bin/python3
-"""User class"""
-from models.base_model import BaseModel, Base
-from sqlalchemy import String, DateTime, Column, ForeignKey
+"""User model"""
+
+from models.base_model import BaseModel
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
-
-class User(BaseModel, Base):
-    """This is the class for user
-    Attributes:
-        email: email address
-        password: password for you login
-        first_name: first name
-        last_name: last name
-    """
+class User(BaseModel):
+    """User model"""
     __tablename__ = 'users'
 
-    email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
-    first_name = Column(String(128), nullable=True)
-    last_name = Column(String(128), nullable=True)
-    places = relationship(
-        'Place',
-        backref='user',
-        cascade='all, delete-orphan')
-    reviews = relationship(
-        'Review',
-        backref='user',
-        cascade='all, delete-orphan')
+    # ... existing attributes ...
+
+    places = relationship('Place', backref='user', cascade='all, delete-orphan')
