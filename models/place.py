@@ -1,14 +1,15 @@
 #!/usr/bin/python3
-"""Place model"""
+"""Place class module for AirBnB clone."""
 
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
-class Place(BaseModel):
-    """Place model"""
+class Place(BaseModel, Base):
+    """Represents a place for the AirBnB clone."""
+    
     __tablename__ = 'places'
-
+    
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
@@ -20,4 +21,5 @@ class Place(BaseModel):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
 
-    reviews = relationship('Review', backref='place', cascade='all, delete-orphan')
+    user = relationship("User", back_populates="places")
+    city = relationship("City", back_populates="places")
