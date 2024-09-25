@@ -1,16 +1,18 @@
 #!/usr/bin/python3
-"""State Module."""
+"""City Module."""
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 
 
-class State(BaseModel, Base):
-    """State class for states in the database."""
+class City(BaseModel, Base):
+    """City class for cities in the database."""
 
-    __tablename__ = 'states'
+    __tablename__ = 'cities'
 
     name = Column(String(128), nullable=False)
-    cities = relationship("City", back_populates="state", cascade="all, delete-orphan")
+    state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
+
+    state = relationship("State", back_populates="cities")
 
