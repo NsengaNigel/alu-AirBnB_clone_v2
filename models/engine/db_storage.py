@@ -4,7 +4,9 @@
 from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from models.base_model import Base
+from models.base_model import BaseModel, Base
+from models.state import State
+from models.city import City
 import models
 
 
@@ -51,4 +53,14 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(Session)
+
+    def get(self, cls, id):
+        """Retrieve an object by class and id."""
+        return self.__session.query(cls).get(id)
+
+    def count(self, cls=None):
+        """Count all objects in storage or of a specific class."""
+        if cls:
+            return self.__session.query(cls).count()
+        return self.__session.query(BaseModel).count()
 
