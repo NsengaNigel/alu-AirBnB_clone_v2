@@ -1,25 +1,29 @@
 #!/usr/bin/python3
-"""User Module.
-
-This module defines the User class, which inherits from BaseModel and Base.
-It represents a user in the database with attributes for email, password,
-first name, and last name.
-"""
-
-from sqlalchemy import Column, String
+"""User class"""
 from models.base_model import BaseModel, Base
+from sqlalchemy import String, DateTime, Column, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class User(BaseModel, Base):
-    """User class for users in the database."""
-
+    """This is the class for user
+    Attributes:
+        email: email address
+        password: password for you login
+        first_name: first name
+        last_name: last name
+    """
     __tablename__ = 'users'
 
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
-
-    def __init__(self, *args, **kwargs):
-        """Initialize a User instance."""
-        super().__init__(*args, **kwargs)
+    places = relationship(
+        'Place',
+        backref='user',
+        cascade='all, delete-orphan')
+    reviews = relationship(
+        'Review',
+        backref='user',
+        cascade='all, delete-orphan')
