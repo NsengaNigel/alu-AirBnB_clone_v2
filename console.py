@@ -124,6 +124,41 @@ class HBNBCommand(cmd.Cmd):
 
         # Create instance with provided attributes
         new_instance = HBNBCommand.classes[class_name]()
+        if class_name == "Review":
+            place_id = None
+            user_id = None
+            text = None
+            for arg in args[1:]:
+                if '=' in arg:
+                    key, value = arg.split('=')
+                    key = key.strip()
+                    value = value.strip().strip('"')
+                    
+                    # Convert spaces to underscores in the key
+                    key = key.replace(' ', '_')
+
+                    # Check for required fields in Review
+                    if key == "place_id":
+                        place_id = value
+                    elif key == "user_id":
+                        user_id = value
+                    elif key == "text":
+                        text = value
+
+            # Validation logic for Review creation
+            if place_id is None or user_id is None or text is None:
+                print("** place_id, user_id, and text must be provided **")
+                return
+
+            # Check if the place_id and user_id are valid (exist in the database)
+            if not self.valid_id(Place, place_id):
+                print("** place_id doesn't exist **")
+                return
+            if not self.valid_id(User, user_id):
+                print("** user_id doesn't exist **")
+                return
+
+        # Set other attributes
         for arg in args[1:]:
             if '=' in arg:
                 key, value = arg.split('=')
@@ -145,6 +180,11 @@ class HBNBCommand(cmd.Cmd):
 
         new_instance.save()
         print(new_instance.id)
+
+    def valid_id(self, class_name, obj_id):
+        """ Checks if an ID exists for a given class """
+        key = f"{class_name.__name__}.{obj_id}"
+        return key in storage.all()
 
     def help_create(self):
         """ Help information for the create method """
@@ -240,66 +280,4 @@ class HBNBCommand(cmd.Cmd):
         print("Shows all objects, or all of a class")
         print("[Usage]: all <className>\n")
 
-    def do_count(self, args):
-        """ Count current number of class instances"""
-        count = 0
-        for k, v in storage._FileStorage__objects.items():
-            if args == k.split('.')[0]:
-                count += 1
-        print(count)
-
-    def help_count(self):
-        """ """
-        print("Usage: count <class_name>")
-
-    def do_update(self, args):
-        """ Updates a certain object with new info """
-        c_name = c_id = att_name = att_val = kwargs = ''
-
-        # isolate cls from id/args, ex: (<cls>, delim, <id/args>)
-        args = args.partition(" ")
-        if args[0]:
-            c_name = args[0]
-        else:  # class name not present
-            print("** class name missing **")
-            return
-        if c_name not in HBNBCommand.classes:  # class name invalid
-            print("** class doesn't exist **")
-            return
-
-        # isolate id from args
-        args = args[2].partition(" ")
-        if args[0]:
-            c_id = args[0]
-        else:  # id not present
-            print("** instance id missing **")
-            return
-
-        # generate key from class and id
-        key = c_name + "." + c_id
-
-        # determine if key is present
-        if key not in storage.all():
-            print("** no instance found **")
-            return
-
-        # process further arguments
-        args = args[2].strip()
-        if args:  # arguments present
-            if '=' in args:
-                att_name, att_val = args.split('=')
-                att_name = att_name.strip()  # clean att_name
-                att_val = att_val.strip().strip('"')  # clean att_val
-                setattr(storage.all()[key], att_name, att_val)
-                storage.all()[key].save()
-            else:
-                print("** invalid syntax **")
-
-    def help_update(self):
-        """ Help information for the update command """
-        print("Updates an object with the new information")
-        print("[Usage]: update <className> <objectId> <attributeName> <attributeValue>\n")
-
-
-if __name__ == '__main__':
-    HBNBCommand().cmdloop()
+    def do
