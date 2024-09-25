@@ -1,25 +1,14 @@
 #!/usr/bin/python3
-"""City Module."""
+"""City model"""
 
-from sqlalchemy import Column, String, ForeignKey
+from models.base_model import BaseModel
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from models.base_model import BaseModel, Base
 
-class City(BaseModel, Base):
-    """City class for cities in the database."""
-
+class City(BaseModel):
+    """City model"""
     __tablename__ = 'cities'
 
-    name = Column(String(128), nullable=False)
-    state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
+    # ... existing attributes ...
 
-    state = relationship("State", back_populates="cities")
-
-    def __init__(self, *args, **kwargs):
-        """Initialize City instance."""
-        super().__init__(*args, **kwargs)
-
-    def __str__(self):
-        """Return string representation of City."""
-        return f"[City] ({self.id}) {self.name}"
-
+    places = relationship('Place', backref='city', cascade='all, delete-orphan')
