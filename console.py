@@ -15,20 +15,22 @@ from models.review import Review
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
-    # determines prompt for interactive/non-interactive modes
+    # Determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
+    
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
+    
     types = {
-             'number_rooms': int, 'number_bathrooms': int,
-             'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
-            }
+        'number_rooms': int, 'number_bathrooms': int,
+        'max_guest': int, 'price_by_night': int,
+        'latitude': float, 'longitude': float
+    }
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -37,13 +39,12 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
         _cmd = _cls = _id = _args = ''  # initialize line elements
 
-        # scan for general formating - i.e '.', '(', ')'
+        # scan for general formatting - i.e '.', '(', ')'
         if not ('.' in line and '(' in line and ')' in line):
             return line
 
@@ -58,7 +59,7 @@ class HBNBCommand(cmd.Cmd):
             if _cmd not in HBNBCommand.dot_cmds:
                 raise Exception
 
-            # if parantheses contain arguments, parse them
+            # if parentheses contain arguments, parse them
             pline = pline[pline.find('(') + 1:pline.find(')')]
             if pline:
                 # partition args: (<id>, [<delim>], [<*args>])
@@ -129,9 +130,16 @@ class HBNBCommand(cmd.Cmd):
                 key = key.strip()
                 value = value.strip().strip('"')
                 
-                # Cast value to appropriate type
+                # Convert spaces to underscores in the key
+                key = key.replace(' ', '_')
+                
+                # Cast value to appropriate type if it is specified
                 if key in HBNBCommand.types:
-                    value = HBNBCommand.types[key](value)
+                    try:
+                        value = HBNBCommand.types[key](value)
+                    except ValueError:
+                        print(f"** invalid value for {key} **")
+                        return
 
                 setattr(new_instance, key, value)
 
@@ -233,7 +241,7 @@ class HBNBCommand(cmd.Cmd):
         print("[Usage]: all <className>\n")
 
     def do_count(self, args):
-        """Count current number of class instances"""
+        """ Count current number of class instances"""
         count = 0
         for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
@@ -275,4 +283,23 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
             return
 
-        # first determine if kwargs or args
+        # process further arguments
+        args = args[2].strip()
+        if args:  # arguments present
+            if '=' in args:
+                att_name, att_val = args.split('=')
+                att_name = att_name.strip()  # clean att_name
+                att_val = att_val.strip().strip('"')  # clean att_val
+                setattr(storage.all()[key], att_name, att_val)
+                storage.all()[key].save()
+            else:
+                print("** invalid syntax **")
+
+    def help_update(self):
+        """ Help information for the update command """
+        print("Updates an object with the new information")
+        print("[Usage]: update <className> <objectId> <attributeName> <attributeValue>\n")
+
+
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
