@@ -53,4 +53,17 @@ class FileStorage:
             key = f"{obj.__class__.__name__}.{obj.id}"
             if key in FileStorage.__objects:
                 del FileStorage.__objects[key]
-
+    def reload(self):
+        """ 
+        Loads the state of objects from the JSON file.
+        """
+        try:
+            with open(FileStorage.__file_path, 'r') as f:
+                obj_dict = json.load(f)
+                for key, value in obj_dict.items():
+                    cls_name = key.split('.')[0]
+                    cls = globals().get(cls_name)
+                    if cls:
+                        self.__objects[key] = cls(**value)
+        except FileNotFoundError:
+            pass

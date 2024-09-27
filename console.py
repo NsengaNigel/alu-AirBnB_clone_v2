@@ -16,16 +16,16 @@ class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
     # Determines prompt for interactive/non-interactive modes
-    prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
+    prompt = '(hbnb) ' if sys.__stdin__ and sys.__stdin__.isatty() else ''
 
     classes = {
         'BaseModel': BaseModel, 'User': User, 'Place': Place,
         'State': State, 'City': City, 'Amenity': Amenity,
         'Review': Review
     }
-    
+
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update', 'create']
-    
+
     types = {
         'number_rooms': int, 'number_bathrooms': int,
         'max_guest': int, 'price_by_night': int,
@@ -108,8 +108,9 @@ class HBNBCommand(cmd.Cmd):
         print("Exits the program without formatting\n")
 
     def emptyline(self):
-        """ Overrides the emptyline method of CMD """
-        pass
+       """ Overrides the emptyline method of CMD """
+       return False
+       pass
 
     def do_create(self, args):
         """ Create an object of any class"""
@@ -133,7 +134,7 @@ class HBNBCommand(cmd.Cmd):
                     key, value = arg.split('=')
                     key = key.strip()
                     value = value.strip().strip('"')
-                    
+
                     # Convert spaces to underscores in the key
                     key = key.replace(' ', '_')
 
@@ -164,10 +165,10 @@ class HBNBCommand(cmd.Cmd):
                 key, value = arg.split('=')
                 key = key.strip()
                 value = value.strip().strip('"')
-                
+
                 # Convert spaces to underscores in the key
                 key = key.replace(' ', '_')
-                
+
                 # Cast value to appropriate type if it is specified
                 if key in HBNBCommand.types:
                     try:
@@ -279,5 +280,3 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the all command """
         print("Shows all objects, or all of a class")
         print("[Usage]: all <className>\n")
-
-    def do

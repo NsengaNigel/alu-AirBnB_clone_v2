@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """ Module for Amenity class """
-from models.base_model import BaseModel
-from models.base import Base
+from models.base_model import Base, BaseModel
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
