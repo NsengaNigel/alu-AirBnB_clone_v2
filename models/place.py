@@ -1,12 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Module for Place class """
-from models.base_model import BaseModel
-from models.base import Base
-from sqlalchemy import Column, String, ForeignKey
+from models.amenity import Amenity
+from models.base_model import Base, BaseModel
+from models.place_amenity import place_amenity
+from sqlalchemy import Column, String, ForeignKey, Integer, Float
 from sqlalchemy.orm import relationship
-
-
-place_amenity = Base.metadata.tables['place_amenity']
 
 class Place(BaseModel, Base):
     """ Place class for storage in database """
@@ -16,14 +14,14 @@ class Place(BaseModel, Base):
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
-    number_rooms = Column(int, default=0)
-    number_bathrooms = Column(int, default=0)
-    max_guest = Column(int, default=0)
-    price_by_night = Column(int, default=0)
-    latitude = Column(float, nullable=True)
-    longitude = Column(float, nullable=True)
+    number_rooms = Column(Integer, default=0)
+    number_bathrooms = Column(Integer, default=0)
+    max_guest = Column(Integer, default=0)
+    price_by_night = Column(Integer, default=0)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
 
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False, back_populates="place_amenities")
+    amenities = relationship("Amenity", secondary=place_amenity, viewonly=False, back_populates="place_amenities")
 
     @property
     def amenities(self):
