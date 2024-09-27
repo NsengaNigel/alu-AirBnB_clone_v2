@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import unittest
 from models.engine.file_storage import FileStorage
 from models.state import State

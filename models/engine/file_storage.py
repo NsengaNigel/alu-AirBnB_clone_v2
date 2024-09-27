@@ -1,7 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Module for FileStorage class, which handles storage of object data in JSON format. """
 
 import json
+import os
+import models
 from models.base_model import BaseModel
 
 class FileStorage:
@@ -53,17 +55,20 @@ class FileStorage:
             key = f"{obj.__class__.__name__}.{obj.id}"
             if key in FileStorage.__objects:
                 del FileStorage.__objects[key]
+
     def reload(self):
-        """ 
-        Loads the state of objects from the JSON file.
-        """
-        try:
-            with open(FileStorage.__file_path, 'r') as f:
-                obj_dict = json.load(f)
-                for key, value in obj_dict.items():
-                    cls_name = key.split('.')[0]
-                    cls = globals().get(cls_name)
-                    if cls:
-                        self.__objects[key] = cls(**value)
-        except FileNotFoundError:
-            pass
+        """Deserialize the JSON file to __objects."""
+        if os.path.exists(self.__file_path):
+            try:
+                with open(self.__file_path, 'r', encoding='utf-8') as f:
+                    obj_dict = json.load(f)
+                    for key, value in obj_dict.items():
+                        if '__class__' in value:
+                            cls_name = value['__class__']
+                            cls = models.classes[cls_name]
+                            self.__objects[key] = cls(**value)
+                        else:
+                            print(f"Warning: Missing '__class__' key in {key}")
+            except json.JSONDecodeError:
+                # Handle the case where the JSON file is empty or malformed
+                print(f"Warning: The file {self.__file_path} is empty or malformed.")

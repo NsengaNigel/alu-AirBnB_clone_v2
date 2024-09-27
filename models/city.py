@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """City class module for AirBnB clone."""
 
 from models.base_model import BaseModel, Base

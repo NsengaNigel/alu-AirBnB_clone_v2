@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Module for Place class """
 from models.amenity import Amenity
 from models.base_model import Base, BaseModel
