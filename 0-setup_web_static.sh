@@ -21,14 +21,24 @@ echo "<html>
 # Create symbolic link, removing the old one if it exists
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-# Give ownership of the /data/ folder to the ubuntu user and group
-sudo chown -R ubuntu:ubuntu /data/
+# Give ownership of the /data/ folder to the current user and group
+sudo chown -R $(whoami):$(whoami) /data/
 
-# Update Nginx configuration to serve content from /data/web_static/current/
-sudo sed -i '/^\tserver_name/ a \\\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
+# Ensure the Nginx configuration includes the /hbnb_static/ location block
+if ! grep -q "location /hbnb_static/" /etc/nginx/sites-available/default; then
+    sudo sed -i '/server_name _;/a \\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
+fi
 
-# Restart Nginx to apply changes
-sudo service nginx restart
+# Test the Nginx configuration for syntax errors
+sudo nginx -t
+
+# Restart Nginx to apply changes if the configuration test passed
+if [ $? -eq 0 ]; then
+    sudo service nginx restart
+else
+    echo "Nginx configuration failed. Please check your configuration."
+    exit 1
+fi
 
 # Exit script successfully
 exit 0
