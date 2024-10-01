@@ -6,7 +6,7 @@ Fabric script that distributes an archive to your web servers
 from fabric.api import env, put, run
 import os.path
 
-env.hosts = ['54.146.239.100', '18.209.46.120']  
+env.hosts = ['<54.146.239.100>', '18.209.46.120']  
 
 
 def do_deploy(archive_path):
